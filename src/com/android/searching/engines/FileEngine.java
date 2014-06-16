@@ -8,11 +8,13 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 
 import com.android.searching.ContentManager.Results;
+import com.android.searching.R;
 
 public class FileEngine extends Engine {
 
@@ -20,7 +22,26 @@ public class FileEngine extends Engine {
 		super(context, type);
 	}
 
-	private HashMap<String, String> fileInfos = new HashMap<String, String>();
+	private HashMap<String, FileInfo> fileInfos = new HashMap<String, FileInfo>();
+	
+	private class FileInfo {
+		private String fileName;
+		private String suffix;
+
+		public FileInfo(String fileName, String suffix) {
+			this.fileName = fileName;
+			this.suffix = suffix;
+		}
+		
+		public String getFileName() {
+			return fileName;
+		}
+		
+		public String getSuffix() {
+			return suffix;
+		}
+		
+	}
 
 	@Override
 	protected void doSearch(Context context, Results results, String pattern) {
@@ -31,13 +52,24 @@ public class FileEngine extends Engine {
 			getAllFileInfo(path);
 		}
 
-		Iterator<Entry<String, String>> it = fileInfos.entrySet().iterator();
+		Iterator<Entry<String, FileInfo>> it = fileInfos.entrySet().iterator();
+		Resources resources = context.getResources();
 		while (it.hasNext()) {
-			Entry<String, String> entry = it.next();
-			String fileName = entry.getValue();
+			Entry<String, FileInfo> entry = it.next();
+			FileInfo fileInfo = entry.getValue();
+			String fileName = fileInfo.getFileName();
+			String suffix = fileInfo.getSuffix();
+			Drawable drawable = null;
+			if (suffix.equals(".txt")) {
+				drawable = resources.getDrawable(R.drawable.ic_txt);
+			} else if (suffix.equals(".jar")) {
+				drawable = resources.getDrawable(R.drawable.ic_jar);
+			} else if (suffix.equals(".html") || suffix.equals(".htm")) {
+				drawable = resources.getDrawable(R.drawable.ic_html);
+			}
 			if (fileName.contains(pattern)) {
 				String filePath = entry.getKey();
-				results.add(new DocumentsResult(null, null, fileName, filePath));
+				results.add(new DocumentsResult(drawable, null, fileName, filePath));
 			}
 		}
 
@@ -57,9 +89,9 @@ public class FileEngine extends Engine {
 							continue;
 						}
 						if (suffix.equals(".txt") || suffix.equals(".jar")
-								|| suffix.equals(".html")) {
+								|| suffix.equals(".html") || suffix.equals(".htm")) {
 							fileInfos.put(file.getCanonicalPath(),
-									file.getName());
+									new FileInfo(file.getName(), suffix));
 						} else {
 							continue;
 						}

@@ -40,8 +40,8 @@ public class ContentManager extends Handler {
 	public final static Map<String, Integer> ICON_RESOURCES = new HashMap<String, Integer>();
 	public final static Map<String, Integer> ICON_RESOURCES_SELECTED = new HashMap<String, Integer>();
 	public final static Map<String, Integer> DEFAULT_ICON_RESOURCES = new HashMap<String, Integer>();
-	private final Context mContext;
 	private final Map<String, Engine> ENGINES = new HashMap<String, Engine>();
+	private final Context mContext;
 	private final Set<String> mContent = new HashSet<String>();
 	private final Map<String, Results> mResults = new HashMap<String, ContentManager.Results>();
 	private int mToBeProcessed = 0;

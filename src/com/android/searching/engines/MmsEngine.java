@@ -22,10 +22,8 @@ public class MmsEngine extends Engine {
 	public MmsEngine(Context context, String type) {
 		super(context, type);
 		if (sMmsIcon == null) {
-			Intent intent = new Intent();
-			Uri uri = ContentUris.withAppendedId(Uri.parse(mmsAllUri), 0);
-			intent.setAction(Intent.ACTION_VIEW);
-			intent.setData(uri);
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setType("vnd.android-dir/mms-sms");
 			PackageManager pm = context.getPackageManager();
 			List<ResolveInfo> list = pm.queryIntentActivities(intent, 0);
 			if (list != null && list.size() == 1) {
@@ -104,6 +102,11 @@ public class MmsEngine extends Engine {
 					.append(formatDate(date));
 
 			return sb.toString();
+		}
+
+		@Override
+		public Drawable getIcon() {
+			return sMmsIcon == null ? sDefaultIcon : sMmsIcon;
 		}
 
 		@Override

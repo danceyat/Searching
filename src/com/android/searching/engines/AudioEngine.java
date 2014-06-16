@@ -1,9 +1,13 @@
 package com.android.searching.engines;
 
+import java.util.List;
+
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -13,8 +17,19 @@ import com.android.searching.ContentManager.Results;
 
 public class AudioEngine extends Engine {
 
+	private static Drawable sAudioIconDefault = null;
+
 	public AudioEngine(Context context, String type) {
 		super(context, type);
+		if (sAudioIconDefault == null) {
+			PackageManager pm = context.getPackageManager();
+			Intent intent = new Intent(Intent.ACTION_MAIN);
+			intent.addCategory(Intent.CATEGORY_APP_MUSIC);
+			List<ResolveInfo> list = pm.queryIntentActivities(intent, 0);
+			if (list != null && list.size() == 1) {
+				sAudioIconDefault = list.get(0).loadIcon(pm);
+			}
+		}
 	}
 
 	@Override
@@ -59,6 +74,11 @@ public class AudioEngine extends Engine {
 		@Override
 		public String getText() {
 			return name;
+		}
+
+		@Override
+		public Drawable getIcon() {
+			return sAudioIconDefault == null ? sDefaultIcon : sAudioIconDefault;
 		}
 
 		@Override

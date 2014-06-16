@@ -20,8 +20,6 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.android.searching.ContentManager.Results;
 import com.android.searching.engines.Engine;
 
@@ -67,7 +65,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			selectContent();
 			break;
 		case R.id.action_settings:
-			Toast.makeText(this, "TEST ONLY", Toast.LENGTH_SHORT).show();
+			startActivity(new Intent(this, SettingsActivity.class));
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -83,15 +81,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				.findViewById(R.id.checkBox_selectAll_alertDialog);
 
 		gridView.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.content_item, ContentManager.ALL) {
+				R.layout.alertdialog_content_item, ContentManager.ALL) {
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
 				TextView textView = null;
 				if (convertView == null) {
 					LayoutInflater li = (LayoutInflater) getContext()
 							.getSystemService(LAYOUT_INFLATER_SERVICE);
-					textView = (TextView) li.inflate(R.layout.content_item,
-							null);
+					textView = (TextView) li.inflate(
+							R.layout.alertdialog_content_item, null);
 				} else {
 					textView = (TextView) convertView;
 				}
@@ -178,7 +176,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	public void attachResults(final Results results) {
 		if (results.size() > 0) {
-			View view = getLayoutInflater().inflate(R.layout.results, null);
+			View view = getLayoutInflater()
+					.inflate(R.layout.results_head, null);
 			TextView title = (TextView) view
 					.findViewById(R.id.textView_resultTitle);
 			TextView count = (TextView) view
@@ -199,12 +198,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 			int index = 0, max = Math.min(PREVIEW_NUM, results.size());
 			while (index < max) {
+				if (index != 0) {
+					mLinearLayout.addView(getLayoutInflater().inflate(
+							R.layout.separator, null));
+				}
 				TextView item = (TextView) getLayoutInflater().inflate(
 						R.layout.listitem, null);
 				final Engine.IResult result = results.get(index);
-				// reduce output height
+				// TODO reduce output height and width, in ListActivity
 				String[] texts = result.getText().split("\n");
-				if (texts.length > 1) {
+				if (texts.length > 2) {
 					item.setText(texts[0] + "\n...");
 				} else {
 					item.setText(result.getText());

@@ -26,7 +26,7 @@ public class ContactEngine extends Engine {
 		if (sContactIconDefault == null) {
 			PackageManager pm = context.getPackageManager();
 			Intent intent = new Intent();
-			intent.setAction(Intent.ACTION_PICK);
+			intent.setAction(Intent.ACTION_VIEW);
 			intent.setData(ContactsContract.Contacts.CONTENT_URI);
 			List<ResolveInfo> list = pm.queryIntentActivities(intent, 0);
 			if (list != null && list.size() == 1) {

@@ -1,9 +1,13 @@
 package com.android.searching.engines;
 
+import java.util.List;
+
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -12,9 +16,20 @@ import android.provider.MediaStore;
 import com.android.searching.ContentManager.Results;
 
 public class VideoEngine extends Engine {
+	private static Drawable sVideoIconDefalut = null;
 
 	public VideoEngine(Context context, String type) {
 		super(context, type);
+		if (sVideoIconDefalut == null) {
+			PackageManager pm = context.getPackageManager();
+			Intent intent = new Intent();
+			intent.setAction(Intent.ACTION_VIEW);
+			intent.setType(MediaStore.Video.Media.CONTENT_TYPE);
+			List<ResolveInfo> list = pm.queryIntentActivities(intent, 0);
+			if (list != null && list.size() == 1) {
+				sVideoIconDefalut = list.get(0).loadIcon(pm);
+			}
+		}
 	}
 
 	@Override
@@ -59,6 +74,11 @@ public class VideoEngine extends Engine {
 		@Override
 		public String getText() {
 			return name;
+		}
+		
+		@Override
+		public Drawable getIcon() {
+			return sVideoIconDefalut == null ? sDefaultIcon : sVideoIconDefalut;
 		}
 
 		@Override

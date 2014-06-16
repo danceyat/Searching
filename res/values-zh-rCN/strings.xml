@@ -5,7 +5,7 @@
     <string name="title_activity_main">搜索</string>
     <string name="action_settings">设置</string>
     <string name="action_selectContent">选择内容</string>
-    <string name="null_">test1</string>
+    <string name="null_">NULL</string>
     <string name="searchHint_textView_main">需要搜索什么？</string>
     <string name="title_app">应用</string>
     <string name="title_contact">联系人</string>
@@ -20,5 +20,9 @@
     <string name="title_file">文件</string>
     <string name="search_button_main">搜一搜</string>
     <string name="selectAll_selectContent">全部选择</string>
+    <string name="title_activity_list">结果</string>
+    <string name="action_save">保存</string>
+    <string name="title_activity_settings">设置</string>
+    <string name="preview_num">预览条数</string>
 
 </resources>

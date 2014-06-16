@@ -21,7 +21,10 @@
     <string name="search_button_main">Go!</string>
     <string name="selectAll_selectContent">select all</string>
     <string name="title_activity_list">Result</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_test">Test</string>
+    <string name="action_save">Save</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="preview_num">Preview Num</string>
+
+    <color name="separator_bgcolor">#eaeaea</color>
 
 </resources>
