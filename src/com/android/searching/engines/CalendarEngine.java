@@ -36,7 +36,7 @@ public class CalendarEngine extends Engine {
 	private static Drawable sCalendarIcon = null;
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern) {
+	protected void doSearch(Context context, Results results, String pattern, boolean isPresearch) {
 
 		String selection = null;
 		if (!pattern.equals("")) {

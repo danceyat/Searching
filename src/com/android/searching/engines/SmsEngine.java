@@ -35,7 +35,7 @@ public class SmsEngine extends Engine {
 	private static String smsAll = "content://sms/";
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern) {
+	protected void doSearch(Context context, Results results, String pattern, boolean isPresearch) {
 		String selection = null;
 		if (!pattern.equals("")) {
 			selection = "address like '%" + pattern + "%' or body like '%"

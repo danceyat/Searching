@@ -1,9 +1,13 @@
 package com.android.searching.engines;
 
+import java.text.CollationKey;
+import java.text.Collator;
 import java.util.ArrayList;
-//import java.util.HashMap;
-//import java.util.TreeMap;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.TreeMap;
 import java.util.List;
+
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -47,8 +51,9 @@ public class ContactEngine extends Engine {
 		String selectByNum = null;
 		boolean isSelectionByName = false;
 		boolean isSelectionByNum = false;
-		// HashMap<String, ContactResult> reslutMap = new HashMap<String,
-		// ContactResult>();
+		CollatorComparator comparator = new CollatorComparator();
+		TreeMap<String, ContactResult> reslutMap = new TreeMap<String, ContactResult>(
+				comparator);
 
 		if (!pattern.equals("")) {
 			selectByName = ContactsContract.Contacts.DISPLAY_NAME + " like '%"
@@ -126,8 +131,8 @@ public class ContactEngine extends Engine {
 					if (id != null) {
 						ContactResult cr = new ContactResult(null, null, id,
 								name, numbers);
-						results.add(cr);
-						// reslutMap.put(id, cr);
+						// results.add(cr);
+						reslutMap.put(name, cr);
 					}
 					id = contacts.getString(contactsIdIndex);
 					name = contacts.getString(contactsNameIndex);
@@ -162,8 +167,8 @@ public class ContactEngine extends Engine {
 					if (id != null) {
 						ContactResult cr = new ContactResult(null, null, id,
 								name, numbers);
-						results.add(cr);
-						// reslutMap.put(id, cr);
+						// results.add(cr);
+						reslutMap.put(name, cr);
 					}
 
 					id = contacts.getString(contactsIdIndex);
@@ -172,8 +177,8 @@ public class ContactEngine extends Engine {
 
 					ContactResult cr = new ContactResult(null, null, id, name,
 							numbers);
-					results.add(cr);
-					// reslutMap.put(id, cr);
+					// results.add(cr);
+					reslutMap.put(name, cr);
 
 					id = null;
 
@@ -195,8 +200,8 @@ public class ContactEngine extends Engine {
 			if (id != null) {
 				ContactResult cr = new ContactResult(null, null, id, name,
 						numbers);
-				results.add(cr);
-				// reslutMap.put(id, cr);
+				// results.add(cr);
+				reslutMap.put(name, cr);
 			}
 
 			contacts.close();
@@ -207,14 +212,18 @@ public class ContactEngine extends Engine {
 			}
 		}
 
-		// TODO remove duplicated contact
-		// if (!pattern.equals("")) {
-		// TreeMap<String, ContactResult> treeMap = new TreeMap<String,
-		// ContactEngine.ContactResult>(
-		// reslutMap);
-		// results.clear();
-		// results.addAll(treeMap.values());
-		// }
+		results.addAll(reslutMap.values());
+	}
+
+	private class CollatorComparator implements Comparator<String> {
+		Collator collator = Collator.getInstance(Locale.CHINESE);
+
+		@Override
+		public int compare(String element1, String element2) {
+			CollationKey key1 = collator.getCollationKey(element1.toString());
+			CollationKey key2 = collator.getCollationKey(element2.toString());
+			return key1.compareTo(key2);
+		}
 	}
 
 	@SuppressWarnings("unused")
@@ -259,8 +268,8 @@ public class ContactEngine extends Engine {
 	}
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern)
-			throws Exception {
+	protected void doSearch(Context context, Results results, String pattern,
+			boolean isPresearch) throws Exception {
 		search2(context, results, pattern);
 	}
 

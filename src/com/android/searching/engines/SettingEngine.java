@@ -11,50 +11,45 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.android.searching.ContentManager.Results;
+import com.android.searching.R;
 
 public class SettingEngine extends Engine {
 	public SettingEngine(Context context, String type) {
 
 		super(context, type);
 		mPm = context.getPackageManager();
+		ResolveInfo resolveInfo;
 
 		if (packageName == null) {
-			packageName = getInstancePackageName(mPm);
-		}
-
-		if (mSettingIcon == null) {
-			try {
-				mSettingIcon = mPm.getApplicationIcon(mPm.getApplicationInfo(
-						packageName, 0));
-			} catch (NameNotFoundException e) {
-				Log.e(TAG, e.getMessage());
-				e.printStackTrace();
+			resolveInfo = getInstancePackageResolveInfo(mPm);
+			packageName = resolveInfo.activityInfo.packageName;
+			if (mSettingIcon == null) {
+				mSettingIcon = resolveInfo.loadIcon(mPm);
 			}
-
 		}
 	}
 
 	private PackageManager mPm = null;
-	private String TAG = "SettingEngine";
 	private static String packageName = null;
 	private static Drawable mSettingIcon = null;
 
-	private String getInstancePackageName(PackageManager pm) {
+	private ResolveInfo getInstancePackageResolveInfo(PackageManager pm) {
 		Intent settingsIntent = new Intent(
 				android.provider.Settings.ACTION_SETTINGS);
-		return pm.resolveActivity(settingsIntent, 0).activityInfo.packageName;
+		return pm.resolveActivity(settingsIntent, 0);
 
 	}
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern) {
+	protected void doSearch(Context context, Results results, String pattern,
+			boolean isPresearch) {
 		try {
 
 			Intent intent = new Intent(Intent.ACTION_MAIN);
+			intent.addCategory(Intent.CATEGORY_DEFAULT);
 			List<ResolveInfo> infos = mPm.queryIntentActivities(intent,
 					PackageManager.GET_INTENT_FILTERS);
 			HashSet<String> classNameSet = new HashSet<String>();
@@ -104,8 +99,8 @@ public class SettingEngine extends Engine {
 			try {
 				context.startActivity(intent);
 			} catch (Exception e) {
-				Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT)
-						.show();
+				Toast.makeText(context, R.string.startup_app_fail,
+						Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 			}
 

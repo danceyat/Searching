@@ -9,5 +9,17 @@
         android:id="@+id/action_selectContent"
         android:showAsAction="always"
         android:title="@string/action_selectContent"/>
+    <!-- <item -->
+    <!-- android:id="@+id/action_test1" -->
+    <!-- android:showAsAction="never" -->
+    <!-- android:title="@string/test1"/> -->
+    <!-- <item -->
+    <!-- android:id="@+id/action_test2" -->
+    <!-- android:showAsAction="never" -->
+    <!-- android:title="@string/test2"/> -->
+    <!-- <item -->
+    <!-- android:id="@+id/action_test3" -->
+    <!-- android:showAsAction="never" -->
+    <!-- android:title="@string/test3"/> -->
 
 </menu>

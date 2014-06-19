@@ -36,7 +36,7 @@ public class MmsEngine extends Engine {
 	private static Drawable sMmsIcon = null;
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern) {
+	protected void doSearch(Context context, Results results, String pattern, boolean isPresearch) {
 		String selection = null;
 
 		ContentResolver cr = context.getContentResolver();

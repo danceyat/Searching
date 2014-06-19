@@ -3,6 +3,7 @@ package com.android.searching;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.HandlerThread;
 import android.view.LayoutInflater;
@@ -20,17 +21,21 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.android.searching.ContentManager.Results;
 import com.android.searching.engines.Engine;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 	private final int PREVIEW_NUM = 3;
 	private final int PREVIEW_DRAWABLE_SIZE = ListActivity.DRAWABLE_SIZE;
+	private final int CONTENT_DRAWABLE_SIZE = 72;
 	public static final String EXTRA_RESULT_TYPE = "resultType";
 
 	TextView mTextView = null;
 	LinearLayout mLinearLayout = null;
 	ContentManager mContentManager = null;
+	ConfigManager mConfigManager = null;
 	Button mButton = null;
 	HandlerThread mThread = null;
 
@@ -49,6 +54,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		mThread = new HandlerThread("manager");
 		mThread.start();
 		mContentManager = new ContentManager(this, mThread.getLooper());
+		mConfigManager = new ConfigManager(getFilesDir());
 	}
 
 	@Override
@@ -97,10 +103,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				String type = getItem(position);
 				textView.setText(getString(ContentManager.TITLE_RESOURCES
 						.get(type)));
-				int drawable = mContentManager.containsContent(type) ? ContentManager.ICON_RESOURCES_SELECTED
+				int drawableRes = mContentManager.containsContent(type) ? ContentManager.ICON_RESOURCES_SELECTED
 						.get(type) : ContentManager.ICON_RESOURCES.get(type);
-				textView.setCompoundDrawablesWithIntrinsicBounds(0, drawable,
-						0, 0);
+				Drawable drawable = getResources().getDrawable(drawableRes);
+				if (drawable != null) {
+					drawable.setBounds(0, 0, CONTENT_DRAWABLE_SIZE,
+							CONTENT_DRAWABLE_SIZE);
+					textView.setCompoundDrawables(null, drawable, null, null);
+				}
 				return textView;
 			}
 		});
@@ -113,14 +123,26 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				if (mContentManager.containsContent(type)) {
 					mContentManager.removeContent(new String[] { type });
 					TextView textView = (TextView) view;
-					textView.setCompoundDrawablesWithIntrinsicBounds(0,
-							ContentManager.ICON_RESOURCES.get(type), 0, 0);
+					int drawableRes = ContentManager.ICON_RESOURCES.get(type);
+					Drawable drawable = getResources().getDrawable(drawableRes);
+					if (drawable != null) {
+						drawable.setBounds(0, 0, CONTENT_DRAWABLE_SIZE,
+								CONTENT_DRAWABLE_SIZE);
+						textView.setCompoundDrawables(null, drawable, null,
+								null);
+					}
 				} else {
 					mContentManager.addContent(new String[] { type });
 					TextView textView = (TextView) view;
-					textView.setCompoundDrawablesWithIntrinsicBounds(0,
-							ContentManager.ICON_RESOURCES_SELECTED.get(type),
-							0, 0);
+					int drawableRes = ContentManager.ICON_RESOURCES_SELECTED
+							.get(type);
+					Drawable drawable = getResources().getDrawable(drawableRes);
+					if (drawable != null) {
+						drawable.setBounds(0, 0, CONTENT_DRAWABLE_SIZE,
+								CONTENT_DRAWABLE_SIZE);
+						textView.setCompoundDrawables(null, drawable, null,
+								null);
+					}
 				}
 				checkBox.setChecked(mContentManager.containsAll());
 			}
@@ -140,11 +162,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				for (int i = 0; i < adapter.getCount(); i++) {
 					TextView textView = (TextView) gridView.getChildAt(i);
 					String type = adapter.getItem(i).toString();
-					int drawable = isChecked ? ContentManager.ICON_RESOURCES_SELECTED
+					int drawableRes = isChecked ? ContentManager.ICON_RESOURCES_SELECTED
 							.get(type) : ContentManager.ICON_RESOURCES
 							.get(type);
-					textView.setCompoundDrawablesWithIntrinsicBounds(0,
-							drawable, 0, 0);
+					Drawable drawable = getResources().getDrawable(drawableRes);
+					if (drawable != null) {
+						drawable.setBounds(0, 0, CONTENT_DRAWABLE_SIZE,
+								CONTENT_DRAWABLE_SIZE);
+						textView.setCompoundDrawables(null, drawable, null,
+								null);
+					}
 				}
 			}
 		});
@@ -165,10 +192,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		}
 	}
 
-	public void onFinishAttaching() {
+	public void onFinishAttaching(final boolean isDone) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				if (!isDone) {
+					Toast.makeText(MainActivity.this,
+							R.string.hint_noContentSelected_mainActivity,
+							Toast.LENGTH_SHORT).show();
+				}
 				mButton.setEnabled(true);
 			}
 		});

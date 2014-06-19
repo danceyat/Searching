@@ -12,7 +12,7 @@
     <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS" />
 
     <uses-sdk
-        android:minSdkVersion="19"
+        android:minSdkVersion="14"
         android:targetSdkVersion="19" />
 
     <application
@@ -37,6 +37,23 @@
             android:name="com.android.searching.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+
+        <receiver android:name="com.android.searching.receiver.AppReceiver" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="com.android.searching.provider.AppContentProvider"
+            android:authorities="com.android.searching.provider.Application"
+            android:exported="false" />
     </application>
 
 </manifest>

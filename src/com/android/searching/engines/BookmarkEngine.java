@@ -17,7 +17,7 @@ public class BookmarkEngine extends Engine {
 	}
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern) {
+	protected void doSearch(Context context, Results results, String pattern, boolean isPresearch) {
 		String selection = Browser.BookmarkColumns.BOOKMARK + "=1";
 
 		if (!pattern.equals("")) {

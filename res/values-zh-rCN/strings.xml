@@ -24,5 +24,13 @@
     <string name="action_save">保存</string>
     <string name="title_activity_settings">设置</string>
     <string name="preview_num">预览条数</string>
+    <string name="startup_app_fail">"不能启动这个应用"</string>
+    <string name="setting_name_displayApp">显示应用</string>
+    <string name="setting_desc_displayApp">搜索应用时是否显示系统自带应用</string>
+    <string name="setting_name_fileTypes">文件类型</string>
+    <string name="setting_desc_fileTypes">搜索文件时过滤文件的类型</string>
+    <string name="setting_fileTypes_save">保存</string>
+    <string name="setting_fileTypes_cancel">取消</string>
+    <string name="hint_noContentSelected_mainActivity">未选择任何搜索内容</string>
 
 </resources>

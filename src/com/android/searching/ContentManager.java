@@ -17,7 +17,7 @@ import android.util.Log;
 
 public class ContentManager extends Handler {
 	private static final boolean DEBUG = true;
-	private static final String TAG = "Searching";
+	private static final String TAG = "ContentManager";
 
 	private static final int MSG_RESULT_READY = 1;
 
@@ -58,6 +58,7 @@ public class ContentManager extends Handler {
 		mContext = context;
 		// TODO check return value
 		initRes();
+		presearch(new String[] { APP });
 
 		addContent(ALL);
 		_instance = this;
@@ -77,33 +78,33 @@ public class ContentManager extends Handler {
 		TITLE_RESOURCES.put(FILE, R.string.title_file);
 
 		// TODO change to appropriate icon
-		ICON_RESOURCES.put(APP, R.drawable.ic_action_null);
-		ICON_RESOURCES.put(CONTACT, R.drawable.ic_action_null);
-		ICON_RESOURCES.put(SMS, R.drawable.ic_action_null);
-		ICON_RESOURCES.put(MMS, R.drawable.ic_action_null);
-		ICON_RESOURCES.put(CALENDAR, R.drawable.ic_action_null);
-		ICON_RESOURCES.put(BOOKMARK, R.drawable.ic_action_null);
-		ICON_RESOURCES.put(IMAGE, R.drawable.ic_action_null);
-		ICON_RESOURCES.put(AUDIO, R.drawable.ic_action_null);
-		ICON_RESOURCES.put(VIDEO, R.drawable.ic_action_null);
-		ICON_RESOURCES.put(SETTING, R.drawable.ic_action_null);
-		ICON_RESOURCES.put(FILE, R.drawable.ic_action_null);
+		ICON_RESOURCES.put(APP, R.drawable.dropdown_app_normal);
+		ICON_RESOURCES.put(CONTACT, R.drawable.dropdown_contact_normal);
+		ICON_RESOURCES.put(SMS, R.drawable.dropdown_sms_normal);
+		ICON_RESOURCES.put(MMS, R.drawable.dropdown_mms_normal);
+		ICON_RESOURCES.put(CALENDAR, R.drawable.dropdown_calendar_normal);
+		ICON_RESOURCES.put(BOOKMARK, R.drawable.dropdown_bookmark_normal);
+		ICON_RESOURCES.put(IMAGE, R.drawable.dropdown_image_normal);
+		ICON_RESOURCES.put(AUDIO, R.drawable.dropdown_audio_normal);
+		ICON_RESOURCES.put(VIDEO, R.drawable.dropdown_video_normal);
+		ICON_RESOURCES.put(SETTING, R.drawable.dropdown_setting_normal);
+		ICON_RESOURCES.put(FILE, R.drawable.dropdown_file_normal);
 
-		ICON_RESOURCES_SELECTED.put(APP, R.drawable.ic_action_null_selected);
-		ICON_RESOURCES_SELECTED
-				.put(CONTACT, R.drawable.ic_action_null_selected);
-		ICON_RESOURCES_SELECTED.put(SMS, R.drawable.ic_action_null_selected);
-		ICON_RESOURCES_SELECTED.put(MMS, R.drawable.ic_action_null_selected);
+		ICON_RESOURCES_SELECTED.put(APP, R.drawable.dropdown_app_pressed);
+		ICON_RESOURCES_SELECTED.put(CONTACT,
+				R.drawable.dropdown_contact_pressed);
+		ICON_RESOURCES_SELECTED.put(SMS, R.drawable.dropdown_sms_pressed);
+		ICON_RESOURCES_SELECTED.put(MMS, R.drawable.dropdown_mms_pressed);
 		ICON_RESOURCES_SELECTED.put(CALENDAR,
-				R.drawable.ic_action_null_selected);
+				R.drawable.dropdown_calendar_pressed);
 		ICON_RESOURCES_SELECTED.put(BOOKMARK,
-				R.drawable.ic_action_null_selected);
-		ICON_RESOURCES_SELECTED.put(IMAGE, R.drawable.ic_action_null_selected);
-		ICON_RESOURCES_SELECTED.put(AUDIO, R.drawable.ic_action_null_selected);
-		ICON_RESOURCES_SELECTED.put(VIDEO, R.drawable.ic_action_null_selected);
-		ICON_RESOURCES_SELECTED
-				.put(SETTING, R.drawable.ic_action_null_selected);
-		ICON_RESOURCES_SELECTED.put(FILE, R.drawable.ic_action_null_selected);
+				R.drawable.dropdown_bookmark_pressed);
+		ICON_RESOURCES_SELECTED.put(IMAGE, R.drawable.dropdown_image_pressed);
+		ICON_RESOURCES_SELECTED.put(AUDIO, R.drawable.dropdown_audio_pressed);
+		ICON_RESOURCES_SELECTED.put(VIDEO, R.drawable.dropdown_video_pressed);
+		ICON_RESOURCES_SELECTED.put(SETTING,
+				R.drawable.dropdown_setting_pressed);
+		ICON_RESOURCES_SELECTED.put(FILE, R.drawable.dropdown_file_pressed);
 
 		DEFAULT_ICON_RESOURCES.put(APP, R.drawable.ic_app);
 		DEFAULT_ICON_RESOURCES.put(CONTACT, R.drawable.ic_contact);
@@ -169,7 +170,7 @@ public class ContentManager extends Handler {
 			}
 			// TODO timeout for some thread exception
 			if (--mToBeProcessed == 0) {
-				activity.onFinishAttaching();
+				activity.onFinishAttaching(true);
 			}
 			break;
 		default:
@@ -184,6 +185,8 @@ public class ContentManager extends Handler {
 	// TODO cache
 	private void searchInMultiThread(final String pattern) {
 		if (mContent.size() == 0) {
+			MainActivity activity = (MainActivity) mContext;
+			activity.onFinishAttaching(false);
 			return;
 		}
 		// TODO threads pool
@@ -208,7 +211,27 @@ public class ContentManager extends Handler {
 				thread.start();
 				mToBeProcessed++;
 			}
-			Log.i(TAG, "Engine " + type + " has started!");
+			if (DEBUG) {
+				Log.d(TAG, "Engine " + type + " has started!");
+			}
+		}
+	}
+
+	private void presearch(String[] content) {
+		for (final String type : content) {
+			final Engine engine = ENGINES.get(type);
+			if (engine != null) {
+				Thread thread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						engine.presearch();
+					}
+				});
+				thread.start();
+			}
+			if (DEBUG) {
+				Log.d(TAG, "Engine " + type + " has started for presearch!");
+			}
 		}
 	}
 

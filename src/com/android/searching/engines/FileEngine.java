@@ -2,28 +2,47 @@ package com.android.searching.engines;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
+
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.webkit.MimeTypeMap;
 
 import com.android.searching.ContentManager.Results;
+import com.android.searching.ConfigManager;
 import com.android.searching.R;
 
 public class FileEngine extends Engine {
+
+	private List<String> mimeType = null;
 
 	public FileEngine(Context context, String type) {
 		super(context, type);
 	}
 
+	private void initMimeType() {
+		mimeType = new ArrayList<String>();
+		String fileTypes[] = ConfigManager.getFileTypes();
+		for (String type : fileTypes) {
+			mimeType.add(MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+					type));
+		}
+	}
+
 	private HashMap<String, FileInfo> fileInfos = new HashMap<String, FileInfo>();
-	
+
 	private class FileInfo {
 		private String fileName;
 		private String suffix;
@@ -32,19 +51,90 @@ public class FileEngine extends Engine {
 			this.fileName = fileName;
 			this.suffix = suffix;
 		}
-		
+
 		public String getFileName() {
 			return fileName;
 		}
-		
+
 		public String getSuffix() {
 			return suffix;
 		}
-		
+
 	}
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern) {
+	protected void doSearch(Context context, Results results, String pattern,
+			boolean isPresearch) {
+		initMimeType();
+		String selection = null;
+		if (!pattern.equals("")) {
+			selection = MediaStore.Files.FileColumns.DATA + " like '%"
+					+ pattern + "%'";
+		}
+
+		ContentResolver cr = context.getContentResolver();
+		Resources resources = context.getResources();
+
+		String[] columns = new String[] { MediaStore.Files.FileColumns.TITLE,
+				MediaStore.Files.FileColumns.DATA };
+		Uri uri = MediaStore.Files.getContentUri("external");
+
+		StringBuilder sb = new StringBuilder();
+		for (int index = 0; index < mimeType.size() - 1; ++index) {
+			sb.append(MediaStore.Files.FileColumns.MIME_TYPE + "='"
+					+ mimeType.get(index) + "' or ");
+		}
+		if (mimeType.size() - 1 >= 0) {
+			sb.append(MediaStore.Files.FileColumns.MIME_TYPE + "='"
+					+ mimeType.get(mimeType.size() - 1) + "'");
+		}
+
+		String selectByType = null;
+		if (selection != null) {
+			selectByType = "(" + sb.toString() + ")";
+			selection = selectByType + " and " + selection;
+		} else {
+			String tmpStr = sb.toString();
+			selection = tmpStr.length() <= 0 ? null : tmpStr;
+		}
+
+		Cursor cursor = cr.query(uri, columns, selection, null,
+				MediaStore.Files.FileColumns.SIZE + " ASC");
+
+		if (cursor != null) {
+			int dataIndex = cursor
+					.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+			int titleIndex = cursor
+					.getColumnIndex(MediaStore.Files.FileColumns.TITLE);
+
+			while (cursor.moveToNext()) {
+				String title = cursor.getString(titleIndex);
+				String data = cursor.getString(dataIndex);
+				String suffix = getFileSuffix(new File(data));
+				Drawable drawable = null;
+				if (suffix != null) {
+					if (suffix.equals(".txt")) {
+						drawable = resources.getDrawable(R.drawable.ic_txt);
+					} else if (suffix.equals(".html") || suffix.equals(".htm")) {
+						drawable = resources.getDrawable(R.drawable.ic_html);
+					} else if (suffix.equals(".pdf")) {
+						drawable = resources.getDrawable(R.drawable.ic_pdf);
+					} else if (suffix.equals(".doc")) {
+						drawable = resources.getDrawable(R.drawable.ic_doc);
+					} else if (suffix.equals(".ppt")) {
+						drawable = resources.getDrawable(R.drawable.ic_ppt);
+					} else if (suffix.equals(".xls")) {
+						drawable = resources.getDrawable(R.drawable.ic_xls);
+					}
+				}
+				results.add(new DocumentsResult(drawable, null, title, data));
+			}
+			cursor.close();
+		}
+
+	}
+
+	protected void doSearch2(Context context, Results results, String pattern) {
 
 		File path = Environment.getExternalStorageDirectory();
 
@@ -62,14 +152,13 @@ public class FileEngine extends Engine {
 			Drawable drawable = null;
 			if (suffix.equals(".txt")) {
 				drawable = resources.getDrawable(R.drawable.ic_txt);
-			} else if (suffix.equals(".jar")) {
-				drawable = resources.getDrawable(R.drawable.ic_jar);
 			} else if (suffix.equals(".html") || suffix.equals(".htm")) {
 				drawable = resources.getDrawable(R.drawable.ic_html);
 			}
 			if (fileName.contains(pattern)) {
 				String filePath = entry.getKey();
-				results.add(new DocumentsResult(drawable, null, fileName, filePath));
+				results.add(new DocumentsResult(drawable, null, fileName,
+						filePath));
 			}
 		}
 
@@ -89,7 +178,8 @@ public class FileEngine extends Engine {
 							continue;
 						}
 						if (suffix.equals(".txt") || suffix.equals(".jar")
-								|| suffix.equals(".html") || suffix.equals(".htm")) {
+								|| suffix.equals(".html")
+								|| suffix.equals(".htm")) {
 							fileInfos.put(file.getCanonicalPath(),
 									new FileInfo(file.getName(), suffix));
 						} else {

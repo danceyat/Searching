@@ -1,9 +1,13 @@
 package com.android.searching.engines;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -17,7 +21,7 @@ public class ImageEngine extends Engine {
 	}
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern) {
+	protected void doSearch(Context context, Results results, String pattern, boolean isPresearch) {
 		String selection = null;
 		if (!pattern.equals("")) {
 			selection = MediaStore.Images.Media.DISPLAY_NAME + " like '%"
@@ -25,9 +29,12 @@ public class ImageEngine extends Engine {
 
 		}
 
-		Cursor cursor = context.getContentResolver().query(
-				MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, selection,
-				null, null);
+		ContentResolver cr = context.getContentResolver();
+		Cursor cursor = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+				null, selection, null, null);
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inDither = false;
+		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 		if (cursor != null) {
 			int idNum = cursor.getColumnIndex(MediaStore.Images.Media._ID);
 			int nameNum = cursor
@@ -35,7 +42,12 @@ public class ImageEngine extends Engine {
 			while (cursor.moveToNext()) {
 				String id = cursor.getString(idNum);
 				String name = cursor.getString(nameNum);
-				results.add(new PhotoResult(null, null, id, name));
+				Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(cr,
+						Long.parseLong(id),
+						MediaStore.Images.Thumbnails.MICRO_KIND, options);
+				Drawable icon = new BitmapDrawable(context.getResources(),
+						bitmap);
+				results.add(new PhotoResult(icon, null, id, name));
 
 			}
 

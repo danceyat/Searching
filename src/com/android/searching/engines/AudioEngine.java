@@ -33,7 +33,7 @@ public class AudioEngine extends Engine {
 	}
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern) {
+	protected void doSearch(Context context, Results results, String pattern, boolean isPresearch) {
 
 		String selection = null;
 		if (!pattern.equals("")) {

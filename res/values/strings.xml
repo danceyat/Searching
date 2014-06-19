@@ -24,7 +24,17 @@
     <string name="action_save">Save</string>
     <string name="title_activity_settings">Settings</string>
     <string name="preview_num">Preview Num</string>
-
-    <color name="separator_bgcolor">#eaeaea</color>
+    <string name="test1">test1</string>
+    <string name="test2">test2</string>
+    <string name="test3">test3</string>
+    <string name="startup_app_fail">"Can't startup this app"</string>
+    <string name="action_displayAll">Display All</string>
+    <string name="setting_name_displayApp">Display app</string>
+    <string name="setting_desc_displayApp">whether show system app while searching for apps</string>
+    <string name="setting_name_fileTypes">File type</string>
+    <string name="setting_desc_fileTypes">File type filter when searching files</string>
+    <string name="setting_fileTypes_save">Save</string>
+    <string name="setting_fileTypes_cancel">Cancel</string>
+    <string name="hint_noContentSelected_mainActivity">No content is selected</string>
 
 </resources>
