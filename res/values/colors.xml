@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="separator_bgcolor">#EAEAEA</color>
+    <color name="setting_desc">#585858</color>
+    <color name="separator2">#58D3F7</color>
+
+</resources>

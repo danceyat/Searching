@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="setting_downloadOnly">
+        <item>Display download app only</item>
+        <item>Display all app</item>
+    </string-array>
+    <string-array name="setting_fileTypes">
+        <item>PDF</item>
+        <item>Plain text files</item>
+        <item>Web pages</item>
+        <item>Word documents</item>
+        <item>Powerpoint documents</item>
+        <item>Excel documents</item>
+    </string-array>
+
+</resources>

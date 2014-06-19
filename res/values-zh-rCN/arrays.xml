@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="setting_downloadOnly">
+        <item>只显示下载应用</item>
+        <item>显示全部应用</item>
+    </string-array>
+    <string-array name="setting_fileTypes">
+        <item>PDF</item>
+        <item>文本文件</item>
+        <item>网页</item>
+        <item>Word文档</item>
+        <item>Powerpoint文档</item>
+        <item>Excel文档</item>
+    </string-array>
+
+</resources>
