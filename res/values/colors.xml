@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="separator_bgcolor">#EAEAEA</color>
-    <color name="setting_desc">#585858</color>
-    <color name="separator2">#58D3F7</color>
+    <color name="separator_bgcolor">#FFEAEAEA</color>
+    <color name="separator2">#FF58D3F7</color>
+    <color name="extended_bgcolor">#FFCCCCCC</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="description_color">#FF808080</color>
 
 </resources>

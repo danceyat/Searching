@@ -15,7 +15,7 @@ import java.util.Set;
 import android.util.Log;
 
 public class ConfigManager {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static final String TAG = "ConfigManager";
 
 	public static final String FILE_TYPE_PDF = "pdf";
@@ -28,17 +28,20 @@ public class ConfigManager {
 
 	private static final String FIRST_RUN = "first_run";
 	private static final String PREVIEW_COUNT = "preview_count";
+	private static final String RESULT_ITEM_DRAWABLE_SIZE = "result_drawable_size";
 	private static final String DOWNLOAD_APP_ONLY = "download_only";
 	private static final String FILE_TYPES = "file_types";
 
 	private static final String CONFIG_FILENAME = "config";
 	private static final int DEFAULT_PREVIEW_COUNT = 3;
+	private static final int DEFAULT_RESULT_ITEM_DRAWABLE_SIZE = 80;
 	private static final String CONTENT_SEPARATOR = ",";
 
 	private final File mFile;
 	private final Map<String, String> mConfig = new HashMap<String, String>();
 	private boolean mFirstRun;
 	private int mPreviewCount;
+	private int mResultItemDrawableSize;
 	private boolean mDownloadOnly;
 	private Set<String> mFileTypes; // keep align with
 									// R.array.setting_fileTypes
@@ -54,6 +57,18 @@ public class ConfigManager {
 			_INSTANCE.mPreviewCount = count;
 		} else {
 			Log.w(TAG, "Invalid preview count " + count + ".");
+		}
+	}
+
+	public static int getResultItemDrawableSize() {
+		return _INSTANCE.mResultItemDrawableSize;
+	}
+
+	public static void setResultItemDrawableSize(int size) {
+		if (size > 0) {
+			_INSTANCE.mResultItemDrawableSize = size;
+		} else {
+			Log.w(TAG, "Invalid result item drawable size " + size + ".");
 		}
 	}
 
@@ -163,7 +178,19 @@ public class ConfigManager {
 		} catch (NumberFormatException e) {
 			mPreviewCount = DEFAULT_PREVIEW_COUNT;
 			Log.w(TAG, "Could not parse " + mConfig.get(PREVIEW_COUNT)
-					+ " to integer, use default preview count(3).");
+					+ " to integer, use default value(" + DEFAULT_PREVIEW_COUNT
+					+ ") for " + PREVIEW_COUNT);
+		}
+		try {
+			mResultItemDrawableSize = Integer.parseInt(mConfig
+					.get(RESULT_ITEM_DRAWABLE_SIZE));
+		} catch (NumberFormatException e) {
+			mResultItemDrawableSize = DEFAULT_RESULT_ITEM_DRAWABLE_SIZE;
+			Log.w(TAG,
+					"Could not parse " + mConfig.get(RESULT_ITEM_DRAWABLE_SIZE)
+							+ " to integer, use default value("
+							+ DEFAULT_RESULT_ITEM_DRAWABLE_SIZE + ") for "
+							+ RESULT_ITEM_DRAWABLE_SIZE);
 		}
 		mDownloadOnly = Boolean.parseBoolean(mConfig.get(DOWNLOAD_APP_ONLY));
 		mFileTypes = new HashSet<String>();
@@ -188,6 +215,8 @@ public class ConfigManager {
 	private void refreshConfig() {
 		mConfig.put(FIRST_RUN, String.valueOf(mFirstRun));
 		mConfig.put(PREVIEW_COUNT, String.valueOf(mPreviewCount));
+		mConfig.put(RESULT_ITEM_DRAWABLE_SIZE,
+				String.valueOf(mResultItemDrawableSize));
 		mConfig.put(DOWNLOAD_APP_ONLY, String.valueOf(mDownloadOnly));
 		if (mFileTypes.size() > 0) {
 			StringBuilder builder = new StringBuilder();

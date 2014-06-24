@@ -66,6 +66,9 @@ public class FileEngine extends Engine {
 	protected void doSearch(Context context, Results results, String pattern,
 			boolean isPresearch) {
 		initMimeType();
+		if (mimeType.size() <= 0) {
+			return;
+		}
 		String selection = null;
 		if (!pattern.equals("")) {
 			selection = MediaStore.Files.FileColumns.DATA + " like '%"
@@ -127,7 +130,7 @@ public class FileEngine extends Engine {
 						drawable = resources.getDrawable(R.drawable.ic_xls);
 					}
 				}
-				results.add(new DocumentsResult(drawable, null, title, data));
+				results.add(new FileResult(drawable, null, title, data));
 			}
 			cursor.close();
 		}
@@ -157,8 +160,7 @@ public class FileEngine extends Engine {
 			}
 			if (fileName.contains(pattern)) {
 				String filePath = entry.getKey();
-				results.add(new DocumentsResult(drawable, null, fileName,
-						filePath));
+				results.add(new FileResult(drawable, null, fileName, filePath));
 			}
 		}
 
@@ -207,14 +209,14 @@ public class FileEngine extends Engine {
 
 	}
 
-	public class DocumentsResult extends Engine.IResult {
+	public class FileResult extends Engine.IResult {
 		private HashMap<String, String> MIMESet = new HashMap<String, String>();
 		private boolean isInitMIMESet = false;
 
 		private String fileName;
 		private String filePath;
 
-		protected DocumentsResult(Drawable icon, String text, String fileName,
+		protected FileResult(Drawable icon, String text, String fileName,
 				String filePath) {
 			super(icon, text);
 			this.fileName = fileName;
@@ -223,9 +225,12 @@ public class FileEngine extends Engine {
 
 		@Override
 		public String getText() {
-			StringBuilder sb = new StringBuilder();
-			sb.append(fileName).append('\n').append(filePath);
-			return sb.toString();
+			return fileName;
+		}
+
+		@Override
+		public String getDesc() {
+			return filePath;
 		}
 
 		@Override

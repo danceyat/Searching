@@ -36,7 +36,8 @@ public class CalendarEngine extends Engine {
 	private static Drawable sCalendarIcon = null;
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern, boolean isPresearch) {
+	protected void doSearch(Context context, Results results, String pattern,
+			boolean isPresearch) {
 
 		String selection = null;
 		if (!pattern.equals("")) {
@@ -50,10 +51,13 @@ public class CalendarEngine extends Engine {
 		if (cursor != null) {
 			int idNum = cursor.getColumnIndex(CalendarContract.Events._ID);
 			int titleNum = cursor.getColumnIndex(CalendarContract.Events.TITLE);
+			int descNum = cursor
+					.getColumnIndex(CalendarContract.Events.DESCRIPTION);
 			while (cursor.moveToNext()) {
 				String id = cursor.getString(idNum);
 				String title = cursor.getString(titleNum);
-				results.add(new CalendarResult(null, null, id, title));
+				String desc = cursor.getString(descNum);
+				results.add(new CalendarResult(null, title, id, desc));
 			}
 			cursor.close();
 		}
@@ -62,18 +66,9 @@ public class CalendarEngine extends Engine {
 
 	public class CalendarResult extends Engine.IResult {
 
-		private String id;
-		private String title;
-
-		protected CalendarResult(Drawable icon, String text, String id,
-				String title) {
-			super(icon, text);
-			this.id = id;
-			this.title = title;
-		}
-
-		public String getText() {
-			return title;
+		protected CalendarResult(Drawable icon, String title, String id,
+				String desc) {
+			super(id, icon, title, desc);
 		}
 
 		public Drawable getIcon() {
@@ -83,7 +78,7 @@ public class CalendarEngine extends Engine {
 		@Override
 		public void onClick(Context context) {
 			Uri uri = ContentUris.withAppendedId(
-					CalendarContract.Events.CONTENT_URI, Long.parseLong(id));
+					CalendarContract.Events.CONTENT_URI, Long.parseLong(mId));
 			Intent intent = new Intent();
 			intent.setAction(Intent.ACTION_VIEW);
 			intent.setData(uri);

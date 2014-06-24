@@ -16,7 +16,7 @@ import android.os.Message;
 import android.util.Log;
 
 public class ContentManager extends Handler {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static final String TAG = "ContentManager";
 
 	private static final int MSG_RESULT_READY = 1;
@@ -159,12 +159,7 @@ public class ContentManager extends Handler {
 		case MSG_RESULT_READY:
 			final String type = msg.obj.toString();
 			final MainActivity activity = (MainActivity) mContext;
-			activity.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					activity.attachResults(mResults.get(type));
-				}
-			});
+			activity.attachResults(mResults.get(type));
 			if (DEBUG) {
 				Log.d(TAG, "Attached type: " + type);
 			}

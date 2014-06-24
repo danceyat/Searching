@@ -1,10 +1,6 @@
 package com.android.searching.engines;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -36,7 +32,8 @@ public class MmsEngine extends Engine {
 	private static Drawable sMmsIcon = null;
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern, boolean isPresearch) {
+	protected void doSearch(Context context, Results results, String pattern,
+			boolean isPresearch) {
 		String selection = null;
 
 		ContentResolver cr = context.getContentResolver();
@@ -73,35 +70,39 @@ public class MmsEngine extends Engine {
 
 	public class MmsResult extends Engine.IResult {
 
-		private String id;
 		private String subject;
-		private String date;
+		// private String date;
 		private String address;
 
 		protected MmsResult(Drawable icon, String text, String id,
 				String subject, String date, String address) {
-			super(icon, text);
-			this.id = id;
+			super(id, icon, text);
 			this.subject = subject;
-			this.date = date;
+			// this.date = date;
 			this.address = address;
 		}
 
-		private String formatDate(String date) {
-			Date d = new Date(Long.parseLong(date));
-			SimpleDateFormat format = new SimpleDateFormat("yy-M-d",
-					Locale.getDefault());
-			return format.format(d);
-		}
+		// private String formatDate(String date) {
+		// Date d = new Date(Long.parseLong(date));
+		// SimpleDateFormat format = new SimpleDateFormat("yy-M-d",
+		// Locale.getDefault());
+		// return format.format(d);
+		// }
 
 		@Override
 		public String getText() {
-			StringBuilder sb = new StringBuilder();
-			sb.append("From: ").append(address).append('\n').append("Sub: ")
-					.append(subject).append('\n').append("date: ")
-					.append(formatDate(date));
+			// StringBuilder sb = new StringBuilder();
+			// sb.append("From: ").append(address).append('\n').append("Sub: ")
+			// .append(subject).append('\n').append("date: ")
+			// .append(formatDate(date));
+			//
+			// return sb.toString();
+			return "Sub: " + subject;
+		}
 
-			return sb.toString();
+		@Override
+		public String getDesc() {
+			return "From: " + address;
 		}
 
 		@Override
@@ -112,7 +113,7 @@ public class MmsEngine extends Engine {
 		@Override
 		public void onClick(Context context) {
 			Uri uri = ContentUris.withAppendedId(Uri.parse(mmsAllUri),
-					Long.parseLong(id));
+					Long.parseLong(mId));
 			Intent intent = new Intent();
 			intent.setAction(Intent.ACTION_VIEW);
 			intent.setData(uri);

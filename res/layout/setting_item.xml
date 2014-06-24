@@ -23,7 +23,7 @@
         android:gravity="bottom"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:textColor="@color/setting_desc"
+        android:textColor="@color/description_color"
         android:textSize="14sp" />
 
 </LinearLayout>

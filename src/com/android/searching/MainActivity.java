@@ -6,7 +6,8 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.HandlerThread;
-import android.view.LayoutInflater;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -27,12 +29,12 @@ import com.android.searching.ContentManager.Results;
 import com.android.searching.engines.Engine;
 
 public class MainActivity extends Activity implements View.OnClickListener {
-	private final int PREVIEW_NUM = 3;
-	private final int PREVIEW_DRAWABLE_SIZE = ListActivity.DRAWABLE_SIZE;
+	private static final boolean __FUTURE__ = false;
+	private int mPreviewCount;
 	private final int CONTENT_DRAWABLE_SIZE = 72;
 	public static final String EXTRA_RESULT_TYPE = "resultType";
 
-	TextView mTextView = null;
+	EditText mEditText = null;
 	LinearLayout mLinearLayout = null;
 	ContentManager mContentManager = null;
 	ConfigManager mConfigManager = null;
@@ -45,8 +47,34 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		View view = getLayoutInflater().inflate(R.layout.activity_main, null);
 		mLinearLayout = (LinearLayout) view
 				.findViewById(R.id.linearLayout_results_mainActivity);
-		mTextView = (TextView) view
+		mEditText = (EditText) view
 				.findViewById(R.id.editText_pattern_mainActivity);
+		if (__FUTURE__) {
+			mEditText.addTextChangedListener(new TextWatcher() {
+
+				@Override
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
+					// TODO Auto-generated method stub
+					mLinearLayout.removeAllViews();
+					String pattern = mEditText.getText().toString();
+					mContentManager.search(pattern);
+				}
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void afterTextChanged(Editable s) {
+					// TODO Auto-generated method stub
+
+				}
+			});
+		}
 		mButton = (Button) view.findViewById(R.id.button_search_mainActivity);
 		mButton.setOnClickListener(this);
 		setContentView(view);
@@ -55,6 +83,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		mThread.start();
 		mContentManager = new ContentManager(this, mThread.getLooper());
 		mConfigManager = new ConfigManager(getFilesDir());
+
+		mPreviewCount = ConfigManager.getPreviewCount();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		ConfigManager.writeImmediately();
 	}
 
 	@Override
@@ -71,7 +107,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			selectContent();
 			break;
 		case R.id.action_settings:
-			startActivity(new Intent(this, SettingsActivity.class));
+			startActivity(new Intent(getApplicationContext(),
+					SettingsActivity.class));
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -87,15 +124,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				.findViewById(R.id.checkBox_selectAll_alertDialog);
 
 		gridView.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.alertdialog_content_item, ContentManager.ALL) {
+				R.layout.select_content_item, ContentManager.ALL) {
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
 				TextView textView = null;
 				if (convertView == null) {
-					LayoutInflater li = (LayoutInflater) getContext()
-							.getSystemService(LAYOUT_INFLATER_SERVICE);
-					textView = (TextView) li.inflate(
-							R.layout.alertdialog_content_item, null);
+					textView = (TextView) MainActivity.this.getLayoutInflater()
+							.inflate(R.layout.select_content_item, null);
 				} else {
 					textView = (TextView) convertView;
 				}
@@ -114,7 +149,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 				return textView;
 			}
 		});
-		gridView.setColumnWidth(120);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -186,7 +220,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		case R.id.button_search_mainActivity:
 			mLinearLayout.removeAllViews();
 			mButton.setEnabled(false);
-			String pattern = mTextView.getText().toString();
+			String pattern = mEditText.getText().toString();
 			mContentManager.search(pattern);
 			break;
 		}
@@ -201,13 +235,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
 							R.string.hint_noContentSelected_mainActivity,
 							Toast.LENGTH_SHORT).show();
 				}
+				// TODO nothing is found, still show something
+				if (mLinearLayout.getChildCount() == 0) {
+
+				}
 				mButton.setEnabled(true);
 			}
 		});
 	}
 
-	public void attachResults(final Results results) {
+	private void attachResultsOnUi(final Results results) {
 		if (results.size() > 0) {
+			// add header
 			View view = getLayoutInflater()
 					.inflate(R.layout.results_head, null);
 			TextView title = (TextView) view
@@ -217,7 +256,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 			title.setText(ContentManager.TITLE_RESOURCES.get(results.getType()));
 			count.setText("(" + results.size() + ")");
-			mLinearLayout.addView(view);
 			view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -227,38 +265,32 @@ public class MainActivity extends Activity implements View.OnClickListener {
 					startActivity(intent);
 				}
 			});
+			mLinearLayout.addView(view);
 
-			int index = 0, max = Math.min(PREVIEW_NUM, results.size());
+			// add content
+			int index = 0, max = Math.min(mPreviewCount, results.size());
 			while (index < max) {
 				if (index != 0) {
 					mLinearLayout.addView(getLayoutInflater().inflate(
 							R.layout.separator, null));
 				}
-				TextView item = (TextView) getLayoutInflater().inflate(
-						R.layout.listitem, null);
+				view = getLayoutInflater()
+						.inflate(R.layout.results_item2, null);
 				final Engine.IResult result = results.get(index);
-				// TODO reduce output height and width, in ListActivity
-				String[] texts = result.getText().split("\n");
-				if (texts.length > 2) {
-					item.setText(texts[0] + "\n...");
-				} else {
-					item.setText(result.getText());
-				}
-				if (result.getIcon() != null) {
-					result.getIcon().setBounds(0, 0, PREVIEW_DRAWABLE_SIZE,
-							PREVIEW_DRAWABLE_SIZE);
-					item.setCompoundDrawables(result.getIcon(), null, null,
-							null);
-				}
-				item.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						result.onClick(MainActivity.this);
-					}
-				});
-				mLinearLayout.addView(item);
+				mLinearLayout.addView(Utils.formatResult(view, result,
+						MainActivity.this));
 				index++;
 			}
 		}
+	}
+
+	// this method may be called from other thread
+	public void attachResults(final Results results) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				attachResultsOnUi(results);
+			}
+		});
 	}
 }

@@ -107,18 +107,29 @@ public abstract class Engine {
 			boolean isPresearch) throws Exception;
 
 	public abstract class IResult {
-		protected int id = -1;
+		protected String mId = null;
 		protected Drawable mIcon = null;
 		protected String mText = null;
+		protected String mDescription = null;
 
 		protected IResult(Drawable icon, String text) {
 			mIcon = icon;
 			mText = text;
 		}
 
-		protected IResult(int id, Drawable icon, String text) {
+		protected IResult(String id, Drawable icon, String text) {
 			this(icon, text);
-			this.id = id;
+			this.mId = id;
+		}
+
+		protected IResult(Drawable icon, String text, String description) {
+			this(icon, text);
+			this.mDescription = description;
+		}
+
+		protected IResult(String id, Drawable icon, String text, String description) {
+			this(id, icon, text);
+			this.mDescription = description;
 		}
 
 		public Drawable getIcon() {
@@ -127,6 +138,10 @@ public abstract class Engine {
 
 		public String getText() {
 			return mText;
+		}
+
+		public String getDesc() {
+			return mDescription;
 		}
 
 		public abstract void onClick(Context context);

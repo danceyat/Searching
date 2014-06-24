@@ -17,7 +17,8 @@ public class BookmarkEngine extends Engine {
 	}
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern, boolean isPresearch) {
+	protected void doSearch(Context context, Results results, String pattern,
+			boolean isPresearch) {
 		String selection = Browser.BookmarkColumns.BOOKMARK + "=1";
 
 		if (!pattern.equals("")) {
@@ -37,7 +38,7 @@ public class BookmarkEngine extends Engine {
 
 				String title = cursor.getString(titleNum);
 				String url = cursor.getString(urlNum);
-				results.add(new BookmarksResult(null, null, title, url));
+				results.add(new BookmarksResult(null, title, url));
 			}
 
 			cursor.close();
@@ -45,23 +46,11 @@ public class BookmarkEngine extends Engine {
 	}
 
 	public class BookmarksResult extends Engine.IResult {
-
-		private String title;
 		private String url;
 
-		protected BookmarksResult(Drawable icon, String text, String title,
-				String url) {
-			super(icon, text);
-
-			this.title = title;
+		protected BookmarksResult(Drawable icon, String title, String url) {
+			super(icon, title, url);
 			this.url = url;
-		}
-
-		@Override
-		public String getText() {
-			StringBuilder sb = new StringBuilder();
-			sb.append(title).append('\n').append(url);
-			return sb.toString();
 		}
 
 		@Override

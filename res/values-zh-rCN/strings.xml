@@ -6,7 +6,7 @@
     <string name="action_settings">设置</string>
     <string name="action_selectContent">选择内容</string>
     <string name="null_">NULL</string>
-    <string name="searchHint_textView_main">需要搜索什么？</string>
+    <string name="editText_searchHint_main">需要搜索什么？</string>
     <string name="title_app">应用</string>
     <string name="title_contact">联系人</string>
     <string name="title_sms">短信</string>
@@ -18,7 +18,7 @@
     <string name="title_video">视频</string>
     <string name="title_setting">设置</string>
     <string name="title_file">文件</string>
-    <string name="search_button_main">搜一搜</string>
+    <string name="button_search_main">搜一搜</string>
     <string name="selectAll_selectContent">全部选择</string>
     <string name="title_activity_list">结果</string>
     <string name="action_save">保存</string>
@@ -32,5 +32,6 @@
     <string name="setting_fileTypes_save">保存</string>
     <string name="setting_fileTypes_cancel">取消</string>
     <string name="hint_noContentSelected_mainActivity">未选择任何搜索内容</string>
-
+    <string name="resultItem_favorite">收藏</string>
+    
 </resources>

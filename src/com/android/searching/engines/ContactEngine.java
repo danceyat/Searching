@@ -295,15 +295,16 @@ public class ContactEngine extends Engine {
 
 		@Override
 		public String getText() {
-			// TODO
+			return name;
+		}
+
+		@Override
+		public String getDesc() {
 			StringBuilder sbBuilder = new StringBuilder();
-			sbBuilder.append(name);
 			for (String number : numbers) {
-				sbBuilder.append('\n').append(number);
+				sbBuilder.append(number).append("; ");
 			}
-			return sbBuilder.toString();
-			//
-			// return name + "   " + numbers.get(0);
+			return sbBuilder.substring(0, sbBuilder.length() - 2);
 		}
 
 		@Override

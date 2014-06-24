@@ -8,11 +8,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class ListActivity extends Activity {
 	public static int DRAWABLE_SIZE = 80;
@@ -35,39 +33,13 @@ public class ListActivity extends Activity {
 				.findViewById(R.id.listView_results_listActivity);
 		setTitle(ContentManager.TITLE_RESOURCES.get(type));
 		listView.setAdapter(new ArrayAdapter<Engine.IResult>(this,
-				R.layout.listitem, mContentManager.getResults(type)) {
+				R.layout.results_item2, mContentManager.getResults(type)) {
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				TextView textView = null;
-				if (convertView != null) {
-					textView = (TextView) convertView;
-				} else {
-					textView = (TextView) getLayoutInflater().inflate(
-							R.layout.listitem, null);
-				}
+				View view = convertView == null ? getLayoutInflater().inflate(
+						R.layout.results_item2, null) : convertView;
 				final Engine.IResult result = getItem(position);
-				// reduce output height
-				String[] texts = result.getText().split("\n");
-				if (texts.length > 2) {
-					textView.setText(texts[0] + "\n...");
-				} else {
-					textView.setText(result.getText());
-				}
-				if (result.getIcon() != null) {
-					result.getIcon().setBounds(0, 0, DRAWABLE_SIZE,
-							DRAWABLE_SIZE);
-					textView.setCompoundDrawables(result.getIcon(), null, null,
-							null);
-				}
-
-				textView.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						result.onClick(ListActivity.this);
-					}
-				});
-
-				return textView;
+				return Utils.formatResult(view, result, ListActivity.this);
 			}
 		});
 		setContentView(view);

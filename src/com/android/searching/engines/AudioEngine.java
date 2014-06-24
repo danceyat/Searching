@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.android.searching.Utils;
 import com.android.searching.ContentManager.Results;
 
 public class AudioEngine extends Engine {
@@ -33,7 +34,8 @@ public class AudioEngine extends Engine {
 	}
 
 	@Override
-	protected void doSearch(Context context, Results results, String pattern, boolean isPresearch) {
+	protected void doSearch(Context context, Results results, String pattern,
+			boolean isPresearch) {
 
 		String selection = null;
 		if (!pattern.equals("")) {
@@ -41,6 +43,7 @@ public class AudioEngine extends Engine {
 					+ pattern + "%'";
 		}
 
+		// TODO should we search title???
 		ContentResolver cr = context.getContentResolver();
 		Cursor cursor = cr.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 				null, selection, null, null);
@@ -49,11 +52,14 @@ public class AudioEngine extends Engine {
 			int idNum = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
 			int nameNum = cursor
 					.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
+			int sizeNum = cursor.getColumnIndex(MediaStore.Audio.Media.SIZE);
 
 			while (cursor.moveToNext()) {
 				String id = cursor.getString(idNum);
 				String name = cursor.getString(nameNum);
-				results.add(new AudioResult(null, null, id, name));
+				String size = cursor.getString(sizeNum);
+				results.add(new AudioResult(null, name, id, Utils
+						.getReadableSizeString(size)));
 			}
 
 			cursor.close();
@@ -62,18 +68,8 @@ public class AudioEngine extends Engine {
 
 	public class AudioResult extends Engine.IResult {
 
-		private String id;
-		private String name;
-
-		protected AudioResult(Drawable icon, String text, String id, String name) {
-			super(icon, text);
-			this.id = id;
-			this.name = name;
-		}
-
-		@Override
-		public String getText() {
-			return name;
+		protected AudioResult(Drawable icon, String name, String id, String desc) {
+			super(id, icon, name, desc);
 		}
 
 		@Override
@@ -85,7 +81,7 @@ public class AudioEngine extends Engine {
 		public void onClick(Context context) {
 			Uri uri = ContentUris.withAppendedId(
 					MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-					Long.parseLong(id));
+					Long.parseLong(mId));
 			Intent intent = new Intent();
 			intent.setAction(Intent.ACTION_VIEW);
 			intent.setData(uri);

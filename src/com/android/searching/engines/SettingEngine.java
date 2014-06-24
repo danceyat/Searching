@@ -66,6 +66,7 @@ public class SettingEngine extends Engine {
 					String lableName = (String) activityInfo.loadLabel(mPm);
 					if (pattern == null || pattern.equals("")
 							|| lableName.contains(pattern)) {
+						// TODO filter out those setting object with no label name
 						results.add(new SettingResult(null, lableName,
 								className));
 					}
@@ -81,8 +82,9 @@ public class SettingEngine extends Engine {
 
 		private String className;
 
-		protected SettingResult(Drawable icon, String text, String className) {
-			super(icon, text);
+		protected SettingResult(Drawable icon, String labelName,
+				String className) {
+			super(icon, labelName, className);
 
 			this.className = className;
 		}

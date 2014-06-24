@@ -7,14 +7,14 @@
     <GridView
         android:id="@+id/gridView_selectContent_alertDialog"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_height="0dp"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_weight="2"
-        android:numColumns="auto_fit" >
-
+        android:layout_weight="1"
+        android:columnWidth="45dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="@dimen/alertdialog_item_vertical_spacing" >
     </GridView>
 
     <CheckBox
@@ -25,7 +25,6 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_weight="1"
         android:text="@string/selectAll_selectContent" />
 
 </LinearLayout>
